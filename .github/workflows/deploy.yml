@@ -1,15 +1,3 @@
-# Авто-деплой на Cloudflare Pages при пуше в main.
-# Цель деплоя = vars.CF_PROJECT_NAME (если задан), иначе имя репо. Пока в орг нет секрета
-# CLOUDFLARE_API_TOKEN — деплой ПРОПУСКАЕТСЯ (workflow зелёный). Токен (Pages:Edit + Zone:DNS:Edit) как
-# org-секрет → деплой оживает: сборка(опц.) → заливка → привязка домена → DNS CNAME → домен Active.
-#
-# ФРЕЙМВОРК-СБОРКА (опционально, класс Vite/CRA/Astro/Next-export): задай repo-переменные
-#   vars.BUILD_CMD   — команда сборки, напр. "npm ci && npm run build"
-#   vars.DEPLOY_DIR  — папка выхлопа для заливки, напр. "dist" / "out" / "build"
-# Заданы → CI ставит Node, билдит и деплоит DEPLOY_DIR. Не заданы → как раньше: pages deploy .
-# (repo-переменные ставит ТОЛЬКО owner — у коллабораторов-участников прав нет; билд-скрипт команды
-#  токена НЕ получает). SSR-фреймворки (Next.js по умолчанию + сервер) статикой не поднять — хостить
-#  на Vercel и линковать (см. docs/dev/github-org-cicd.md).
 name: Deploy to Cloudflare Pages
 on:
   push:
@@ -59,13 +47,12 @@ jobs:
       - name: Отключаем edge-кэш (хакатон — правки видны сразу)
         if: steps.guard.outputs.ok == 'true'
         run: |
-          # _headers пишем в DEPLOY_DIR (после сборки), чтобы Pages его подхватил. no-store -> edge не кэширует.
           mkdir -p "${DEPLOY_DIR}"
           if [ ! -f "${DEPLOY_DIR}/_headers" ]; then
             printf '/*\n  Cache-Control: no-store\n' > "${DEPLOY_DIR}/_headers"
-            echo "::notice::_headers (Cache-Control: no-store) добавлен в ${DEPLOY_DIR} — edge-кэш выключен"
+            echo "::notice::_headers (no-store) добавлен в ${DEPLOY_DIR} — edge-кэш выключен"
           else
-            echo "::notice::_headers уже есть в ${DEPLOY_DIR} — не трогаю (уважаем настройку команды)"
+            echo "::notice::_headers уже есть в ${DEPLOY_DIR} — не трогаю"
           fi
       - name: Deploy to Cloudflare Pages
         if: steps.guard.outputs.ok == 'true'
@@ -90,8 +77,6 @@ jobs:
         env:
           TOK: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          # Без DNS-записи домен висит в статусе pending. Создаём CNAME <project> -> <project>.pages.dev
-          # в зоне hackonvibe.com (нужен Zone:DNS:Edit в токене). Идемпотентно: повтор -> "уже существует".
           curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/dns_records" \
             -H "Authorization: Bearer $TOK" -H "Content-Type: application/json" \
             --data "{\"type\":\"CNAME\",\"name\":\"${CF_PROJECT}\",\"content\":\"${CF_PROJECT}.pages.dev\",\"proxied\":true}" \
