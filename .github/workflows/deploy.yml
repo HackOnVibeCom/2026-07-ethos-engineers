@@ -22,7 +22,7 @@ env:
   CF_ACCOUNT_ID: fa36ce8e651a803962efe3793f9c4b51
   CF_ZONE_ID: 60a2c82f45b0abccf34c91e51ee91ca8
   CF_PROJECT: ${{ vars.CF_PROJECT_NAME || github.event.repository.name }}
-  DEPLOY_DIR: ${{ vars.DEPLOY_DIR || '.open-next/assets' }}
+  DEPLOY_DIR: .open-next/assets
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -58,6 +58,7 @@ jobs:
         if: steps.guard.outputs.ok == 'true'
         run: |
           # _headers пишем в DEPLOY_DIR (после сборки), чтобы Pages его подхватил. no-store -> edge не кэширует.
+          mkdir -p "${DEPLOY_DIR}"
           if [ ! -f "${DEPLOY_DIR}/_headers" ]; then
             printf '/*\n  Cache-Control: no-store\n' > "${DEPLOY_DIR}/_headers"
             echo "::notice::_headers (Cache-Control: no-store) добавлен в ${DEPLOY_DIR} — edge-кэш выключен"
