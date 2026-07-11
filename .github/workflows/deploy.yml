@@ -49,10 +49,12 @@ jobs:
           echo "::notice::Запускаем сборку Next.js для Cloudflare Pages..."
           npm ci
           npx @opennextjs/cloudflare@latest build
-          mkdir -p .open-next/assets/_worker.bundle
-          cp -R .open-next/. .open-next/assets/_worker.bundle/ 2>/dev/null || true
-          rm -rf .open-next/assets/_worker.bundle/assets
-          mv .open-next/assets/_worker.bundle/worker.js .open-next/assets/_worker.bundle/index.js
+          rm -rf _worker.bundle .open-next/assets/_worker.bundle
+          mkdir -p _worker.bundle
+          cp -R .open-next/. _worker.bundle/
+          rm -rf _worker.bundle/assets
+          mv _worker.bundle/worker.js _worker.bundle/index.js
+          mv _worker.bundle .open-next/assets/
           echo "::notice::Сборка успешно завершена. Выхлоп в '${DEPLOY_DIR}'"
       - name: Отключаем edge-кэш (хакатон — правки видны сразу)
         if: steps.guard.outputs.ok == 'true'
