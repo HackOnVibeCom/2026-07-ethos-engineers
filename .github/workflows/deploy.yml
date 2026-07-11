@@ -37,12 +37,16 @@ jobs:
           echo "::notice::Запускаем сборку Next.js для Cloudflare Pages..."
           npm ci
           npx @opennextjs/cloudflare@latest build
-          rm -rf _worker.bundle .open-next/assets/_worker.bundle
-          mkdir -p _worker.bundle
-          cp -R .open-next/. _worker.bundle/
-          rm -rf _worker.bundle/assets
-          mv _worker.bundle/worker.js _worker.bundle/index.js
-          mv _worker.bundle .open-next/assets/
+          echo "::notice::Копируем зависимости воркер-функции и создаём _worker.js и _routes.json..."
+          cp -R .open-next/cloudflare .open-next/middleware .open-next/server-functions .open-next/.build .open-next/assets/
+          cp .open-next/worker.js .open-next/assets/_worker.js
+          cat << 'EOF' > .open-next/assets/_routes.json
+          {
+            "version": 1,
+            "include": ["/*"],
+            "exclude": ["/_next/static/*"]
+          }
+          EOF
           echo "::notice::Сборка успешно завершена. Выхлоп в '${DEPLOY_DIR}'"
       - name: Отключаем edge-кэш (хакатон — правки видны сразу)
         if: steps.guard.outputs.ok == 'true'
