@@ -55,9 +55,11 @@ jobs:
         run: |
           # Без DNS-записи домен висит в статусе pending. Создаём CNAME <project> -> <project>.pages.dev
           # в зоне hackonvibe.com (нужен Zone:DNS:Edit в токене). Идемпотентно: повтор -> "уже существует".
-          curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/dns_records" \
+          resp=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/dns_records" \
             -H "Authorization: Bearer $TOK" -H "Content-Type: application/json" \
-            --data "{\"type\":\"CNAME\",\"name\":\"${CF_PROJECT}\",\"content\":\"${CF_PROJECT}.pages.dev\",\"proxied\":true}" \
-            | grep -q '"success":true' \
-            && echo "::notice::DNS CNAME создан -> ${CF_PROJECT}.hackonvibe.com (домен станет Active)" \
-            || echo "::notice::DNS-запись уже существует (норма) либо нет прав Zone:DNS:Edit в токене"
+            --data "{\"type\":\"CNAME\",\"name\":\"${CF_PROJECT}\",\"content\":\"${CF_PROJECT}.pages.dev\",\"proxied\":true}")
+          if echo "$resp" | grep -q '"success":true'; then
+            echo "::notice::DNS CNAME создан -> ${CF_PROJECT}.hackonvibe.com (домен станет Active)"
+          else
+            echo "::error::DNS POST не удался. errors=$(echo "$resp" | python3 -c 'import sys,json;print(json.load(sys.stdin).get("errors"))' 2>/dev/null || echo "$resp" | head -c 300)"
+          fi
