@@ -22,7 +22,7 @@ env:
   CF_ACCOUNT_ID: fa36ce8e651a803962efe3793f9c4b51
   CF_ZONE_ID: 60a2c82f45b0abccf34c91e51ee91ca8
   CF_PROJECT: ${{ vars.CF_PROJECT_NAME || github.event.repository.name }}
-  DEPLOY_DIR: ${{ vars.DEPLOY_DIR || '.' }}
+  DEPLOY_DIR: ${{ vars.DEPLOY_DIR || '.open-next/assets' }}
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -38,19 +38,22 @@ jobs:
             echo "ok=false" >> "$GITHUB_OUTPUT"
             echo "::notice::CLOUDFLARE_API_TOKEN не задан в секретах орг — деплой пропущен (норма до настройки токена)"
           fi
-      - name: Setup Node (только если задан BUILD_CMD)
-        if: steps.guard.outputs.ok == 'true' && vars.BUILD_CMD != ''
+      - name: Setup Node
+        if: steps.guard.outputs.ok == 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-      - name: Build фреймворка (только если задан BUILD_CMD)
-        if: steps.guard.outputs.ok == 'true' && vars.BUILD_CMD != ''
-        # ВАЖНО: тут НЕТ токена в env — билд-скрипт команды не должен иметь доступ к секрету.
-        env:
-          BUILD_CMD: ${{ vars.BUILD_CMD }}
+          node-version: "22"
+      - name: Build Next.js with OpenNext Cloudflare Adapter
+        if: steps.guard.outputs.ok == 'true'
         run: |
-          echo "::notice::сборка команды: $BUILD_CMD → выхлоп в '${DEPLOY_DIR}'"
-          eval "$BUILD_CMD"
+          echo "::notice::Запускаем сборку Next.js для Cloudflare Pages..."
+          npm ci
+          npx @opennextjs/cloudflare@latest build
+          mkdir -p .open-next/assets/_worker.bundle
+          cp -R .open-next/. .open-next/assets/_worker.bundle/ 2>/dev/null || true
+          rm -rf .open-next/assets/_worker.bundle/assets
+          mv .open-next/assets/_worker.bundle/worker.js .open-next/assets/_worker.bundle/index.js
+          echo "::notice::Сборка успешно завершена. Выхлоп в '${DEPLOY_DIR}'"
       - name: Отключаем edge-кэш (хакатон — правки видны сразу)
         if: steps.guard.outputs.ok == 'true'
         run: |
