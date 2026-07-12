@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { AssetBody, CHANNELS, CHANNEL_LABELS } from "@/components/AssetView";
+import { AssetBody } from "@/components/AssetView";
+import { CHANNELS, CHANNEL_LABELS } from "@/lib/channels";
 import DiscordShare from "@/components/DiscordShare";
 
 export const dynamic = "force-dynamic";

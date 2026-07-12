@@ -1,18 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { CHANNELS, CHANNEL_LABELS } from "@/lib/channels";
 
-export const CHANNELS = [
-  { key: "aso", label: "App Store / Play Store", icon: "🏪" },
-  { key: "twitter", label: "Twitter / X", icon: "🐦" },
-  { key: "linkedin", label: "LinkedIn", icon: "💼" },
-  { key: "product_hunt", label: "Product Hunt", icon: "🐱" },
-  { key: "reddit", label: "Reddit", icon: "👽" },
-];
-
-export const CHANNEL_LABELS = Object.fromEntries(
-  CHANNELS.map((c) => [c.key, c.label])
-);
 
 export function CopyButton({ text, label = "Copy" }) {
   const [copied, setCopied] = useState(false);

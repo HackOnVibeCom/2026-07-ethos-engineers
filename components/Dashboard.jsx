@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { CHANNELS, CHANNEL_LABELS, AssetBody, CopyButton, assetToText } from "./AssetView";
+import { CHANNELS, CHANNEL_LABELS } from "@/lib/channels";
+import { AssetBody, CopyButton, assetToText } from "./AssetView";
 import Autopilot from "./Autopilot";
 
 export default function Dashboard({
