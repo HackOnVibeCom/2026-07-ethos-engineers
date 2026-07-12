@@ -20,8 +20,20 @@ Indie/solo mobile app developers and small dev studios (1–5 people) who ship a
 
 ## Pricing
 - **Free:** 1 complete launch kit (single app) — the launch moment is the hook.
-- **Pro — ₹499/month:** unlimited apps, regeneration as the app evolves (new features → refreshed ASO + posts), unlimited data-driven optimizations, tracking history, and upcoming channels (HN, TikTok/Shorts scripts, press kit).
+- **Pro — ₹499/month:** unlimited apps, regeneration as the app evolves (new features → refreshed ASO + posts), unlimited data-driven optimizations, autopilot publishing to Reddit/Telegram/X/LinkedIn/Discord, tracking history, and upcoming channels (HN, TikTok/Shorts scripts, press kit).
 - Why it works: priced like a utility, below one hour of freelance copywriting; the free kit is the demo, the second app is the paywall.
+
+## Why a real user pays (not just why the business could theoretically make money)
+This is the question that actually decides revenue, and it has a specific answer, not a vibe:
+
+1. **The free tier isn't a limited trial of the same thing — it's a complete but single-use product.** Nothing is crippled or watermarked on Free; you get the full kit, the full plan, real tracking. What runs out is *quantity*, at exactly the moment quantity starts to matter — app #2. That's a much stronger conversion moment than a 14-day countdown, because the value the user already received is undeniable when they hit the wall.
+2. **The real alternative to paying isn't "free forever," it's "worse or more expensive."** Three concrete alternatives, and LaunchCopilot beats all three on the dimension that matters to a shipping developer:
+   - *Doing it yourself:* 2–4 hours per launch across five platforms, competing with the hours you'd rather spend building. Pro turns that into minutes, every time, indefinitely.
+   - *A freelance copywriter or agency:* ₹15,000–40,000 ($180–480) per launch, days of turnaround, and they still don't publish or track anything — that's a pure copy deliverable. Pro is a full month of unlimited launches for less than one such invoice.
+   - *A generic ChatGPT prompt, copy-pasted everywhere:* free, but it's the exact failure mode LaunchCopilot exists to fix — no platform conventions, no publishing, no measurement, and it reads like it. The cost isn't money, it's a launch that underperforms.
+3. **Autopilot is the part money buys that no amount of user effort can substitute for.** Copy generation alone could plausibly be "worth doing manually" for a stubborn user. Live, scheduled publishing across five APIs with a working queue and daily cron cannot be manually replicated — there's no free workaround, which is exactly why it's gated to Pro rather than a nice-to-have upsell.
+4. **The subscription can be self-funding, not just self-justifying.** ₹499/mo is below what many apps already spend acquiring a single paid install. If platform-native copy converts even marginally better than generic copy-paste — which is the entire thesis of the product — the marketing lift from one extra install covers the month. That's a much easier sell than "trust us, it's worth it."
+5. **Value compounds under the subscription instead of resetting.** Tracking history and optimization hypotheses accumulate per account across every app shipped. A user who cancels loses that compounding, which is a stickier reason to stay than most SaaS churn triggers ever manage to build.
 
 ## Business Success track — path to revenue (the monetization is BUILT, not slideware)
 **Implemented in the product:** the freemium funnel works end-to-end in the demo. Create one app free → the second app hits a live paywall (HTTP 402) → the pricing page upgrades you to Pro → the second app unlocks. In production, the upgrade endpoint becomes a Razorpay Subscriptions webhook (INR-native, UPI/cards) — the gating logic doesn't change, only the activation trigger.
@@ -46,11 +58,11 @@ Indie/solo mobile app developers and small dev studios (1–5 people) who ship a
 ## v2 roadmap (say this when judges ask "what's next")
 1. Supabase Auth + per-user workspaces (RLS policies already scaffolded).
 2. Real analytics: App Store Connect / Play Console API pulls replace self-logging.
-3. Direct publish: X/LinkedIn APIs, PH draft creation.
+3. Direct publish to Product Hunt if/when they grant write-scope API access (currently a manual request to their team, not self-serve — see below).
 4. Copy A/B loop: generate 2 variants per channel, score against logged installs, regenerate from the winner — the tracking data becomes training signal.
 5. More channels: Hacker News, TikTok/Shorts scripts, press/media kit.
 
 ## PIVOT UPDATE — from advisor to executor (final submission framing)
-**New one-liner:** Paste your app's store link. LaunchCopilot writes your entire launch in each platform's native voice — then *publishes it for you*, on schedule, via the Reddit, Telegram, and X APIs.
+**New one-liner:** Paste your app's store link. LaunchCopilot writes your entire launch in each platform's native voice — then *publishes it for you*, on schedule, via the Reddit, Telegram, X, LinkedIn, and Discord APIs.
 
-Why this framing wins: advice products compete with ChatGPT; execution products compete with agencies. Input is one URL (the store listing is read automatically); output is real, live posts at real URLs, fired by a daily cron with zero human action. The loop is now: paste link → kit writes itself → autopilot publishes → installs tracked per channel → weakest copy rewritten from the data. The human's only job is to approve. LinkedIn and Product Hunt have no public posting APIs — their copy ships one-click-ready, and saying so is the honest answer to "why isn't everything automatic?"
+Why this framing wins: advice products compete with ChatGPT; execution products compete with agencies. Input is one URL (the store listing is read automatically); output is real, live posts at real URLs, fired by a daily cron with zero human action. The loop is now: paste link → kit writes itself → autopilot publishes → installs tracked per channel → weakest copy rewritten from the data. The human's only job is to approve (and, for LinkedIn specifically, a one-time OAuth click — LinkedIn requires the member to authorize posting, there's no static API key, unlike the other four). Product Hunt is the one channel that stays copy-paste: PH doesn't offer self-serve write access to their API, it's gated behind a manual request to their team, so promising automatic PH posting would be dishonest. Saying so plainly is the honest answer to "why isn't everything automatic?"

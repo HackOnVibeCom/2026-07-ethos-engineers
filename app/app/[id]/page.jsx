@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { configuredChannels } from "@/lib/publishers";
+import { configuredChannels, linkedInAuthAvailable } from "@/lib/publishers";
 import Dashboard from "@/components/Dashboard";
 
 export const dynamic = "force-dynamic";
@@ -28,6 +28,11 @@ export default async function AppDashboardPage({ params }) {
 
   if (!app) notFound();
 
+  const publishable = await configuredChannels();
+  // LinkedIn needs an app-level env config AND a member to have connected —
+  // this tells the UI whether to offer a "Connect LinkedIn" button at all.
+  const linkedinConnectable = linkedInAuthAvailable() && !publishable.includes("linkedin");
+
   return (
     <Dashboard
       app={app}
@@ -35,7 +40,8 @@ export default async function AppDashboardPage({ params }) {
       initialPlan={plan?.days ?? null}
       initialEntries={entries ?? []}
       initialQueue={queue ?? []}
-      publishable={configuredChannels()}
+      publishable={publishable}
+      linkedinConnectable={linkedinConnectable}
     />
   );
 }

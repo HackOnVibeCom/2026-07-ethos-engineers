@@ -98,9 +98,9 @@ export default function IntakeForm() {
         <div className="card subtle" style={{ marginTop: 14, borderColor: "var(--accent)" }}>
           <h3>🔓 Your free launch kit is used</h3>
           <p className="hint">
-            The free plan covers one launch. Pro gives you unlimited apps,
-            copy regeneration as your app evolves, and multi-app tracking —
-            ₹499/month.
+            The free plan covers one launch — the moment you ship again, Pro
+            pays for itself: unlimited apps, copy regeneration, autopilot
+            publishing, and multi-app tracking for ₹499/month.
           </p>
           <Link className="btn" href="/pricing">
             See Pro →

@@ -19,10 +19,10 @@ export async function POST(req) {
       ]);
     if (!app) return NextResponse.json({ error: "App not found" }, { status: 404 });
 
-    const configured = configuredChannels();
+    const configured = await configuredChannels();
     if (!configured.length) {
       return NextResponse.json(
-        { error: "No publishers configured. Add Reddit / Telegram / X keys to .env.local (see .env.example) and restart." },
+        { error: "No publishers configured. Add Reddit / Telegram / X / LinkedIn / Discord keys to .env.local (see .env.example) and restart." },
         { status: 400 }
       );
     }
@@ -40,11 +40,15 @@ export async function POST(req) {
       }
     }
 
+    // Channels whose copy comes from generated assets need the asset first —
+    // Telegram/Discord compose their own announcement from whatever assets
+    // already exist, so they're exempt.
+    const NEEDS_GENERATED_ASSET = new Set(["twitter", "reddit", "linkedin"]);
+
     const rows = [];
     for (const channel of configured) {
       if (alreadyPublished.has(channel)) continue;
-      // Channels whose copy comes from generated assets need the asset first
-      if ((channel === "twitter" || channel === "reddit") && !haveAssets.has(channel)) continue;
+      if (NEEDS_GENERATED_ASSET.has(channel) && !haveAssets.has(channel)) continue;
       const day = dayFor[channel] ?? 1;
       const when = new Date();
       when.setDate(when.getDate() + (day - 1));

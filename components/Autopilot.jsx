@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const LABELS = {
   reddit: "Reddit",
@@ -9,6 +9,7 @@ const LABELS = {
   aso: "App Store",
   linkedin: "LinkedIn",
   product_hunt: "Product Hunt",
+  discord: "Discord",
 };
 
 function StatusBadge({ post }) {
@@ -25,9 +26,23 @@ function StatusBadge({ post }) {
 
 // THE AUTOPILOT CONSOLE — posts that publish themselves. Queue state lives in
 // Dashboard so per-card "Publish live" buttons stay in sync with this table.
-export default function Autopilot({ app, plan, publishable, queue, setQueue, notify }) {
+export default function Autopilot({ app, plan, publishable, linkedinConnectable, queue, setQueue, notify }) {
   const [building, setBuilding] = useState(false);
   const [running, setRunning] = useState(false);
+
+  // Reflect the ?linkedin=connected|error redirect from /api/auth/linkedin/callback.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const li = params.get("linkedin");
+    if (!li) return;
+    if (li === "connected") notify("ok", "LinkedIn connected — it can now publish live.");
+    else if (li === "error") notify("err", `LinkedIn connection failed: ${params.get("msg") || "unknown error"}`);
+    params.delete("linkedin");
+    params.delete("msg");
+    const rest = params.toString();
+    window.history.replaceState({}, "", window.location.pathname + (rest ? `?${rest}` : ""));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function refreshQueue() {
     const res = await fetch(`/api/autopilot?appId=${app.id}`);
@@ -77,6 +92,11 @@ export default function Autopilot({ app, plan, publishable, queue, setQueue, not
       <div className="channel-head" style={{ marginTop: 32 }}>
         <h2 style={{ margin: 0 }}>🛰 Launch autopilot</h2>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {linkedinConnectable && (
+            <a className="btn secondary" href={`/api/auth/linkedin/start?appId=${app.id}`}>
+              💼 Connect LinkedIn
+            </a>
+          )}
           <button className="btn secondary" onClick={startAutopilot} disabled={building}>
             {building ? "Scheduling…" : queue.length ? "Re-sync queue" : "Arm autopilot"}
           </button>
@@ -90,10 +110,11 @@ export default function Autopilot({ app, plan, publishable, queue, setQueue, not
       <div className="card">
         {publishable.length === 0 ? (
           <p className="hint">
-            No publishers connected yet. Add Reddit, Telegram, or X API keys to{" "}
-            <code>.env.local</code> (see <code>.env.example</code>) and restart —
-            then your posts publish themselves on schedule. In production a daily
-            cron fires them with zero clicks.
+            No publishers connected yet. Add Reddit, Telegram, X, or Discord
+            keys to <code>.env.local</code> (see <code>.env.example</code>) and
+            restart, or connect LinkedIn with the button above — then your
+            posts publish themselves on schedule. In production a daily cron
+            fires them with zero clicks.
           </p>
         ) : queue.length === 0 ? (
           <p className="hint">
@@ -135,9 +156,10 @@ export default function Autopilot({ app, plan, publishable, queue, setQueue, not
               </div>
             ))}
             <p className="hint" style={{ marginTop: 10 }}>
-              Deployed on Vercel, a daily cron publishes due posts automatically —
-              no clicks. LinkedIn &amp; Product Hunt have no public posting APIs,
-              so their copy stays one-click-ready in the kit above.
+              Deployed on Vercel, a daily cron publishes due posts automatically
+              — no clicks. Product Hunt has no self-serve posting API (they
+              gate write access behind a manual request), so its copy stays
+              one-click-ready in the kit above.
             </p>
           </>
         )}

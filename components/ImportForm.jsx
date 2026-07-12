@@ -62,7 +62,9 @@ export default function ImportForm() {
         <div className="card subtle" style={{ marginTop: 14, borderColor: "var(--accent)" }}>
           <h3>🔓 Your free launch kit is used</h3>
           <p className="hint">
-            Pro gives you unlimited apps, regeneration, and autopilot publishing — ₹499/month.
+            One launch is free; app #2 is where Pro pays for itself — unlimited
+            apps, regeneration, and autopilot publishing to 5 channels for
+            ₹499/month, less than one hour of a freelance copywriter.
           </p>
           <Link className="btn" href="/pricing">See Pro →</Link>
         </div>

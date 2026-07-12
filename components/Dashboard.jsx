@@ -14,6 +14,7 @@ export default function Dashboard({
   initialEntries,
   initialQueue = [],
   publishable = [],
+  linkedinConnectable = false,
 }) {
   const [assets, setAssets] = useState(
     Object.fromEntries(initialAssets.map((a) => [a.channel, a.content]))
@@ -324,6 +325,11 @@ export default function Dashboard({
                   {pubBusy[key] ? "Publishing…" : "📤 Publish live"}
                 </button>
               )}
+              {key === "linkedin" && !publishable.includes("linkedin") && linkedinConnectable && (
+                <a className="btn secondary small" href={`/api/auth/linkedin/start?appId=${app.id}`}>
+                  Connect LinkedIn to publish
+                </a>
+              )}
               <button
                 className="btn secondary small"
                 onClick={() => {
@@ -400,6 +406,7 @@ export default function Dashboard({
         app={app}
         plan={plan}
         publishable={publishable}
+        linkedinConnectable={linkedinConnectable}
         queue={queue}
         setQueue={setQueue}
         notify={notify}
@@ -456,6 +463,7 @@ export default function Dashboard({
                   <option key={c.key} value={c.key}>{c.label}</option>
                 ))}
                 <option value="telegram">Telegram</option>
+                <option value="discord">Discord</option>
                 <option value="other">Other</option>
               </select>
             </div>
