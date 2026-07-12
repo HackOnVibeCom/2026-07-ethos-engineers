@@ -404,3 +404,17 @@ button.plan-task.clickable:hover { color: var(--text); }
   }
   html { scroll-behavior: auto; }
 }
+
+/* ---- One-link intake hero ---- */
+.import-row { display: flex; gap: 10px; }
+.import-row input { flex: 1; }
+@media (max-width: 720px) { .import-row { flex-direction: column; } }
+details summary::-webkit-details-marker { color: var(--muted); }
+
+/* ---- Autopilot queue ---- */
+.queue-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0; font-size: 14px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.queue-row:last-of-type { border-bottom: none; }

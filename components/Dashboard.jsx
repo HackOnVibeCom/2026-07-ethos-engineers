@@ -4,8 +4,16 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { CHANNELS, CHANNEL_LABELS, AssetBody, CopyButton, assetToText } from "./AssetView";
+import Autopilot from "./Autopilot";
 
-export default function Dashboard({ app, initialAssets, initialPlan, initialEntries }) {
+export default function Dashboard({
+  app,
+  initialAssets,
+  initialPlan,
+  initialEntries,
+  initialQueue = [],
+  publishable = [],
+}) {
   const [assets, setAssets] = useState(
     Object.fromEntries(initialAssets.map((a) => [a.channel, a.content]))
   );
@@ -19,6 +27,8 @@ export default function Dashboard({ app, initialAssets, initialPlan, initialEntr
   const [toast, setToast] = useState(null); // { type: "ok"|"err", msg }
   const [doneTasks, setDoneTasks] = useState({}); // "day-index" -> true
   const [genProgress, setGenProgress] = useState(null); // { current, total, label }
+  const [queue, setQueue] = useState(initialQueue);
+  const [pubBusy, setPubBusy] = useState({}); // channel -> bool
 
   // Plan checklist progress persists locally per app
   const planKey = `lc-plan-done-${app.id}`;
@@ -26,7 +36,7 @@ export default function Dashboard({ app, initialAssets, initialPlan, initialEntr
     try {
       const saved = window.localStorage.getItem(planKey);
       if (saved) setDoneTasks(JSON.parse(saved));
-    } catch { }
+    } catch {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -35,7 +45,7 @@ export default function Dashboard({ app, initialAssets, initialPlan, initialEntr
       const next = { ...prev, [id]: !prev[id] };
       try {
         window.localStorage.setItem(planKey, JSON.stringify(next));
-      } catch { }
+      } catch {}
       return next;
     });
   }
@@ -84,11 +94,43 @@ export default function Dashboard({ app, initialAssets, initialPlan, initialEntr
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Plan generation failed");
       setPlan(data.days);
-      notify("ok", "7-day plan ready — start with Day 1.");
+      notify("ok", "7-day plan ready — arm autopilot to schedule the posts.");
     } catch (e) {
       notify("err", e.message);
     } finally {
       setPlanBusy(false);
+    }
+  }
+
+  // PUBLISH FOR REAL: creates a live post on the platform via its API.
+  async function publishNow(channel) {
+    if (
+      !window.confirm(
+        `Publish the ${CHANNEL_LABELS[channel] ?? channel} post LIVE right now? It will appear publicly on your connected account.`
+      )
+    )
+      return;
+    setPubBusy((s) => ({ ...s, [channel]: true }));
+    try {
+      const res = await fetch("/api/publish", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ appId: app.id, channel }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Publish failed");
+      setQueue((q) => {
+        const rest = q.filter((p) => p.channel !== channel);
+        return [...rest, data.post].sort(
+          (a, b) => new Date(a.scheduled_for) - new Date(b.scheduled_for)
+        );
+      });
+      notify("ok", `🎉 Live on ${CHANNEL_LABELS[channel] ?? channel}!`);
+      if (data.post?.result_url) window.open(data.post.result_url, "_blank");
+    } catch (e) {
+      notify("err", e.message);
+    } finally {
+      setPubBusy((s) => ({ ...s, [channel]: false }));
     }
   }
 
@@ -136,7 +178,6 @@ export default function Dashboard({ app, initialAssets, initialPlan, initialEntr
       setAssets((a) => ({ ...a, [data.channel]: data.content }));
       setOptResult(data.channel);
       notify("ok", `Rewrote ${CHANNEL_LABELS[data.channel] ?? data.channel} using your launch data.`);
-      // Bring the rewritten card into view so the hypothesis is seen immediately
       setTimeout(() => {
         document
           .getElementById(`channel-${data.channel}`)
@@ -273,6 +314,15 @@ export default function Dashboard({ app, initialAssets, initialPlan, initialEntr
               {assets[key] && (
                 <CopyButton text={assetToText(key, assets[key])} label="Copy all" />
               )}
+              {assets[key] && publishable.includes(key) && (
+                <button
+                  className="btn small"
+                  onClick={() => publishNow(key)}
+                  disabled={pubBusy[key]}
+                >
+                  {pubBusy[key] ? "Publishing…" : "📤 Publish live"}
+                </button>
+              )}
               <button
                 className="btn secondary small"
                 onClick={() => {
@@ -345,6 +395,15 @@ export default function Dashboard({ app, initialAssets, initialPlan, initialEntr
         )}
       </div>
 
+      <Autopilot
+        app={app}
+        plan={plan}
+        publishable={publishable}
+        queue={queue}
+        setQueue={setQueue}
+        notify={notify}
+      />
+
       <h2 style={{ marginTop: 32 }}>📊 Which channel is working?</h2>
       <div className="card">
         {Object.keys(totals).length === 0 ? (
@@ -395,6 +454,7 @@ export default function Dashboard({ app, initialAssets, initialPlan, initialEntr
                 {CHANNELS.map((c) => (
                   <option key={c.key} value={c.key}>{c.label}</option>
                 ))}
+                <option value="telegram">Telegram</option>
                 <option value="other">Other</option>
               </select>
             </div>
@@ -426,7 +486,7 @@ export default function Dashboard({ app, initialAssets, initialPlan, initialEntr
 
         {entries.length > 0 && (
           <div style={{ marginTop: 18 }}>
-            <span className="field-label" style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--muted)", fontWeight: 650 }}>
+            <span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--muted)", fontWeight: 650 }}>
               Recent activity
             </span>
             {entries.slice(0, 5).map((en) => (

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ImportForm from "@/components/ImportForm";
 import IntakeForm from "@/components/IntakeForm";
 import { supabase } from "@/lib/supabase";
 
@@ -22,13 +23,12 @@ export default async function HomePage() {
 
   return (
     <div>
-      <h1>You shipped the app. Now ship the launch.</h1>
+      <h1>Paste a link. Your app launch runs itself.</h1>
       <p className="lede">
-        Tell LaunchCopilot about your newly launched mobile app and get a full
-        promotion kit: App Store ASO copy, launch posts for X and LinkedIn, a
-        Product Hunt pitch, a Reddit post that won&apos;t get you banned — and
-        a 7-day promotion plan. Every asset written for that platform&apos;s
-        real conventions, not one generic blurb.
+        Drop your App Store or Play Store link. LaunchCopilot reads your
+        listing, writes platform-native copy for five channels, schedules it —
+        and publishes real posts to Reddit, Telegram, and X automatically.
+        You stay in the editor; the launch happens anyway.
       </p>
 
       {error && (
@@ -37,27 +37,35 @@ export default async function HomePage() {
         </div>
       )}
 
+      <div className="card" style={{ borderColor: "var(--accent)" }}>
+        <h2 style={{ marginTop: 0 }}>Launch your app</h2>
+        <ImportForm />
+        <details style={{ marginTop: 14 }}>
+          <summary className="hint" style={{ cursor: "pointer" }}>
+            No store link yet? Fill in the details manually
+          </summary>
+          <div style={{ marginTop: 10 }}>
+            <IntakeForm />
+          </div>
+        </details>
+      </div>
+
       <div className="steps">
         <div className="step">
           <span className="step-num">1</span>
-          <strong>Describe your app</strong>
-          <span className="hint">20 seconds of info you already know.</span>
+          <strong>Paste your store link</strong>
+          <span className="hint">AI reads the listing — name, category, screenshots, positioning.</span>
         </div>
         <div className="step">
           <span className="step-num">2</span>
-          <strong>Get 5 platform-native assets</strong>
-          <span className="hint">ASO, X, LinkedIn, Product Hunt, Reddit — plus a 7-day plan.</span>
+          <strong>Kit writes itself</strong>
+          <span className="hint">ASO, X, LinkedIn, Product Hunt, Reddit — each in that platform&apos;s native voice.</span>
         </div>
         <div className="step">
           <span className="step-num">3</span>
-          <strong>Track & let AI iterate</strong>
-          <span className="hint">Log results; the weakest copy gets rewritten from your data.</span>
+          <strong>Autopilot publishes</strong>
+          <span className="hint">Real posts go live on schedule via Reddit, Telegram &amp; X APIs. Results tracked, weakest copy rewritten.</span>
         </div>
-      </div>
-
-      <div className="card">
-        <h2 style={{ marginTop: 0 }}>Create your launch kit</h2>
-        <IntakeForm />
       </div>
 
       {apps.length > 0 && (

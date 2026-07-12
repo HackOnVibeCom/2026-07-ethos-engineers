@@ -49,3 +49,8 @@ Indie/solo mobile app developers and small dev studios (1–5 people) who ship a
 3. Direct publish: X/LinkedIn APIs, PH draft creation.
 4. Copy A/B loop: generate 2 variants per channel, score against logged installs, regenerate from the winner — the tracking data becomes training signal.
 5. More channels: Hacker News, TikTok/Shorts scripts, press/media kit.
+
+## PIVOT UPDATE — from advisor to executor (final submission framing)
+**New one-liner:** Paste your app's store link. LaunchCopilot writes your entire launch in each platform's native voice — then *publishes it for you*, on schedule, via the Reddit, Telegram, and X APIs.
+
+Why this framing wins: advice products compete with ChatGPT; execution products compete with agencies. Input is one URL (the store listing is read automatically); output is real, live posts at real URLs, fired by a daily cron with zero human action. The loop is now: paste link → kit writes itself → autopilot publishes → installs tracked per channel → weakest copy rewritten from the data. The human's only job is to approve. LinkedIn and Product Hunt have no public posting APIs — their copy ships one-click-ready, and saying so is the honest answer to "why isn't everything automatic?"
