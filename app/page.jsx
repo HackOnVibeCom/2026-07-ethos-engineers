@@ -23,13 +23,19 @@ export default async function HomePage() {
 
   return (
     <div>
-      <h1>Paste a link. Your app launch runs itself.</h1>
-      <p className="lede">
-        Drop your App Store or Play Store link. LaunchCopilot reads your
-        listing, writes platform-native copy for five channels, schedules it —
-        and publishes real posts to Reddit, Telegram, and X automatically.
-        You stay in the editor; the launch happens anyway.
-      </p>
+      <div className="hero">
+        <span className="eyebrow">🛰️ AI launch copilot for indie devs</span>
+        <h1>
+          Paste a link.{" "}
+          <span className="gradient-text">Your app launch runs itself.</span>
+        </h1>
+        <p className="lede">
+          Drop your App Store or Play Store link. LaunchCopilot reads your
+          listing, writes platform-native copy for five channels, schedules it —
+          and publishes real posts to Reddit, Telegram, and X automatically.
+          You stay in the editor; the launch happens anyway.
+        </p>
+      </div>
 
       {error && (
         <div className="error-box">
@@ -50,6 +56,7 @@ export default async function HomePage() {
         </details>
       </div>
 
+      <span className="section-label">How it works</span>
       <div className="steps">
         <div className="step">
           <span className="step-num">1</span>

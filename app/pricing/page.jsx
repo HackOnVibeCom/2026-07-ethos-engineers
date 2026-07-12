@@ -18,18 +18,21 @@ export default async function PricingPage() {
 
   return (
     <div>
-      <h1>Pricing</h1>
-      <p className="lede">
-        Your first launch is on us. Pay when LaunchCopilot becomes part of how
-        you ship.
-      </p>
+      <div className="hero">
+        <span className="eyebrow">💳 Simple pricing</span>
+        <h1>Pricing</h1>
+        <p className="lede">
+          Your first launch is on us. Pay when LaunchCopilot becomes part of
+          how you ship.
+        </p>
+      </div>
 
       <div className="grid-2">
         <div className="card">
           <h3>Free</h3>
-          <p style={{ fontSize: 28, fontWeight: 700, margin: "4px 0" }}>₹0</p>
+          <p style={{ fontSize: 30, fontWeight: 750, margin: "4px 0" }}>₹0</p>
           <p className="hint">The launch moment, covered.</p>
-          <ul style={{ paddingLeft: 18, lineHeight: 2 }}>
+          <ul>
             <li>1 complete launch kit (1 app)</li>
             <li>All 5 channels + conventions shown</li>
             <li>7-day promotion plan</li>
@@ -37,7 +40,7 @@ export default async function PricingPage() {
             <li>Public share page</li>
           </ul>
           {plan === "free" && (
-            <p className="hint">
+            <p className="hint" style={{ marginTop: 14 }}>
               Current plan — {appCount === 0 ? "your free kit is unused" : "your free kit is used"}.
             </p>
           )}
@@ -46,19 +49,21 @@ export default async function PricingPage() {
         <div className="card pro-card">
           <span className="pro-flag">Recommended</span>
           <h3>Pro</h3>
-          <p style={{ fontSize: 28, fontWeight: 700, margin: "4px 0" }}>
+          <p style={{ fontSize: 30, fontWeight: 750, margin: "4px 0" }}>
             ₹{PRO_PRICE_INR}
-            <span style={{ fontSize: 14, color: "var(--muted)" }}>/month</span>
+            <span style={{ fontSize: 14, color: "var(--muted)", fontWeight: 550 }}>/month</span>
           </p>
           <p className="hint">For devs who keep shipping.</p>
-          <ul style={{ paddingLeft: 18, lineHeight: 2 }}>
+          <ul>
             <li>Unlimited apps and launch kits</li>
             <li>Regenerate copy as your app evolves</li>
             <li>Unlimited data-driven optimizations</li>
             <li>Multi-app tracking dashboard</li>
             <li>Coming: HN + Shorts scripts, press kit</li>
           </ul>
-          <UpgradeButton plan={plan} />
+          <div style={{ marginTop: 14 }}>
+            <UpgradeButton plan={plan} />
+          </div>
         </div>
       </div>
 

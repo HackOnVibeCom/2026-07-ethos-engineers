@@ -1,5 +1,6 @@
 import "./globals.css";
 import Link from "next/link";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const title = "LaunchCopilot — promotion kit for your new app";
 const description =
@@ -25,23 +26,40 @@ export const metadata = {
   },
 };
 
+// Applied before hydration so the light/dark theme never flashes on load.
+const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("lc-theme");document.documentElement.setAttribute("data-theme", t === "light" ? "light" : "dark");}catch(e){document.documentElement.setAttribute("data-theme","dark");}})();`;
+
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
+      <body suppressHydrationWarning>
         <header className="site-header">
-          <Link href="/" className="logo">
-            🚀 LaunchCopilot
-          </Link>
-          <span className="tagline-sm">ship the app, we ship the launch</span>
-          <Link href="/pricing" className="tagline-sm" style={{ marginLeft: "auto", color: "var(--accent)", textDecoration: "none" }}>
-            Pricing
-          </Link>
+          <div className="site-header-inner">
+            <Link href="/" className="logo">
+              <span className="logo-mark">🚀</span>
+              <span className="logo-text">LaunchCopilot</span>
+            </Link>
+            <nav className="site-nav">
+              <span className="tagline-sm">ship the app, we ship the launch</span>
+              <Link href="/pricing" className="nav-link">
+                Pricing
+              </Link>
+              <ThemeToggle />
+            </nav>
+          </div>
         </header>
         <main className="container">{children}</main>
         <footer className="site-footer">
-          LaunchCopilot · Your first launch kit is free · Pro ₹499/mo for
-          unlimited apps, regeneration & tracking
+          <div className="site-footer-inner">
+            <span className="foot-brand">🚀 LaunchCopilot</span>
+            <p className="hint">
+              Your first launch kit is free · Pro ₹499/mo for unlimited apps,
+              regeneration &amp; tracking
+            </p>
+          </div>
         </footer>
       </body>
     </html>
