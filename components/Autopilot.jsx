@@ -16,7 +16,11 @@ function StatusBadge({ post }) {
   if (post.status === "failed")
     return <span className="badge err" title={post.error}>failed</span>;
   const due = new Date(post.scheduled_for) <= new Date();
-  return <span className={`badge ${due ? "busy" : ""}`}>{due ? "due now" : "queued"}</span>;
+  return (
+    <span className={`badge ${due ? "busy" : ""}`} suppressHydrationWarning>
+      {due ? "due now" : "queued"}
+    </span>
+  );
 }
 
 // THE AUTOPILOT CONSOLE — posts that publish themselves. Queue state lives in
@@ -103,7 +107,7 @@ export default function Autopilot({ app, plan, publishable, queue, setQueue, not
             {queue.map((post) => (
               <div className="queue-row" key={post.id ?? post.channel}>
                 <span className="bar-label">{LABELS[post.channel] ?? post.channel}</span>
-                <span className="hint">
+                <span className="hint" suppressHydrationWarning>
                   {new Date(post.scheduled_for).toLocaleString(undefined, {
                     month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
                   })}
