@@ -1,5 +1,6 @@
 # 🚀 LaunchCopilot
-
+Deploy Link : https://2026-07-ethos-engineers.hackonvibe.com
+Demo Video Link : https://youtu.be/Ye8fpxNaucc
 **Ship the app. We ship the launch.**
 
 > Paste your App Store or Play Store link. LaunchCopilot reads your listing, writes platform-native launch copy for five channels, schedules it — and **publishes real posts** to Reddit, Telegram, X, LinkedIn, and Discord automatically. You stay in the editor; the launch happens anyway.
