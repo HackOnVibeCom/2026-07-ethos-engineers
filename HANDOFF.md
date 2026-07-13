@@ -25,12 +25,13 @@ created live at a real URL.
 - Supabase (Postgres + storage) — ALL access server-side via service-role key
   (`lib/supabase.js`). No auth (deliberate scope cut, documented as v2).
 - LLM: provider-switchable via plain fetch, no SDKs (`lib/llm.js`).
-  LLM_PROVIDER=gemini (default; FREE tier) | anthropic | openai.
-  Gemini model MUST be `gemini-flash-latest` (gemini-2.5/2.0-flash are RETIRED and
+  LLM_PROVIDER=groq (default; FREE, 30 req/min) | gemini | anthropic | openai.
+  Default model: llama-3.3-70b-versatile via Groq (https://console.groq.com).
+  Gemini fallback: MUST use `gemini-flash-latest` (gemini-2.5/2.0-flash are RETIRED and
   return quota errors with limit:0 — do not "fix" by switching to them).
-  Gemini free tier = 5 req/min; code has exponential backoff on 429.
   `reasoning_effort:"none"` is sent ONLY to Gemini (thinking models truncate JSON
-  otherwise); maxTokens=8000.
+  otherwise); maxTokens=8000. `response_format:{type:"json_object"}` is sent to all
+  providers that support it (Groq/OpenAI/Gemini); controlled by `supportsJsonMode` flag.
 - Zod validation on all API routes (`lib/validation.js`).
 - Tests: `npm test` = 10 unit tests on `lib/parse-json.mjs` (LLM output parser),
   all passing. `npm run test:e2e` needs `npm run dev` running.
@@ -73,11 +74,11 @@ created live at a real URL.
   `docs/architecture.md`, `fix.md` (audit with status table), HANDOFF.md (this).
 
 ## CURRENT STATE / WHAT WORKS
-- Full pipeline tested working locally with Gemini: intake → 5 channels generate
-  → plan → tracking → optimizer. Paywall + pricing + upgrade flow work.
+- Full pipeline tested working locally with Groq (Llama 3.3 70B): intake → 5 channels
+  generate → plan → tracking → optimizer. Paywall + pricing + upgrade flow work.
 - All Supabase migrations run. `.env.local` has SUPABASE_URL,
-  SUPABASE_SERVICE_ROLE_KEY, LLM_PROVIDER=gemini, GEMINI_API_KEY,
-  GEMINI_MODEL=gemini-flash-latest.
+  SUPABASE_SERVICE_ROLE_KEY, LLM_PROVIDER=groq, GROQ_API_KEY.
+  Gemini key also retained as commented fallback.
 - NEW autopilot layer code-complete and import-verified, but NOT yet runtime
   tested (needs publisher keys + dev server restart).
 
@@ -120,11 +121,12 @@ created live at a real URL.
 - User's zsh doesn't accept `#` comment lines when pasting commands.
 - Next.js webpack cache corrupts after adding routes while dev server runs:
   fix = `rm -rf .next && npm run dev` (happened twice).
+- **LLM_PROVIDER default is now `groq`** (Llama 3.3 70B, 30 req/min free tier —
+  6× more headroom than Gemini's 5 req/min). "Generate full kit" fires 5 sequential
+  calls — Groq handles this without hitting rate limits. To fall back to Gemini:
+  set LLM_PROVIDER=gemini and ensure GEMINI_API_KEY is set.
 - Never print/commit .env.local. It contains real Supabase service-role +
-  Gemini keys. All zips/rsyncs so far have excluded it.
-- Gemini free tier: 5 req/min. "Generate full kit" = 5 sequential calls ≈ 2-3
-  min with backoff. NEVER generate live in the demo — pre-generate, and
-  pre-arm autopilot so only "Publish live"/"Run due" happens on camera.
+  Groq/Gemini keys. All zips/rsyncs so far have excluded it.
 - LinkedIn & Product Hunt have NO public posting APIs — their copy stays
   copy-paste. This is stated honestly in UI + pitch; don't promise otherwise.
 - The user's Gemini API key format is `AQ.Ab8...` (new format, valid).

@@ -6,7 +6,7 @@
 
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)
 ![Supabase](https://img.shields.io/badge/Supabase-Postgres-3ECF8E?logo=supabase)
-![Gemini](https://img.shields.io/badge/AI-Gemini%20Flash-4285F4?logo=google)
+![Groq](https://img.shields.io/badge/AI-Groq%20Llama%203.3-F55036?logo=groq)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 
 ---
@@ -149,7 +149,7 @@ Free tier gives one complete launch kit (the launch moment is the hook). Pro at 
 | **Language** | JavaScript / JSX (no TypeScript) | Speed of iteration for hackathon timeline |
 | **Styling** | Custom CSS design system (`globals.css`) | CSS variables, dark theme, no Tailwind dependency |
 | **Database** | Supabase (PostgreSQL + Storage) | Server-side only via service-role key; screenshots in storage bucket |
-| **AI / LLM** | Gemini Flash (default, free tier) | Provider-switchable: `gemini` / `anthropic` / `openai` via env var |
+| **AI / LLM** | Groq (Llama 3.3 70B, default, free tier, 30 req/min) | Provider-switchable: `groq` / `gemini` / `anthropic` / `openai` via `LLM_PROVIDER` env var |
 | **Validation** | Zod | Schema validation on all 10 API routes |
 | **Publishing** | Reddit API, Telegram Bot API, X API v2, LinkedIn Posts API, Discord webhooks | Real OAuth/token integrations — not mock/stub |
 | **Scheduling** | Vercel Cron (`vercel.json`) | Daily 9:00 AM → `/api/cron` fires all due posts |
@@ -244,7 +244,7 @@ Fill in the required values:
 |----------|--------|
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Settings → API → Project URL |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Settings → API → service_role key |
-| `GEMINI_API_KEY` | [Google AI Studio](https://aistudio.google.com) → Get API key (free, no card) |
+| `GROQ_API_KEY` | [console.groq.com](https://console.groq.com) → API Keys (free, no card required) |
 | `CRON_SECRET` | Any random string (for securing the cron endpoint) |
 
 **Optional — for live publishing (Autopilot):**
